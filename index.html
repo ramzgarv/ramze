@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Creative Studio - Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* gray-900 */
+        }
+        .custom-loader {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 5px solid #4B5563; /* gray-600 */
+            border-top-color: #3B82F6; /* blue-500 */
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1F2937; }
+        ::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6B7280; }
+
+        .transition-all-ease {
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.25.0"
+  }
+}
+</script>
+</head>
+<body class="text-white">
+
+    <div id="main-content" class="container mx-auto p-4 md:p-8 max-w-6xl">
+        <main class="bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 space-y-8">
+            <header class="text-center border-b border-gray-700 pb-6 mb-6">
+                <div class="flex justify-center items-center gap-4 mb-4">
+                    <img src="https://files.catbox.moe/44mra4.png" alt="Logo" class="h-16 w-16 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/64x64/1F2937/FFFFFF?text=Logo';">
+                    <h1 class="text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">AI Creative Studio</h1>
+                </div>
+                 <p class="text-gray-400 mt-2 max-w-3xl mx-auto">Satu tempat untuk semua kebutuhan kreatif Anda: Dari Pose Generator hingga Desain Logo Instan.</p>
+            </header>
+
+            <!-- SECTION: POSE GENERATOR -->
+            <section id="pose-generator-section">
+                <h2 class="text-3xl font-bold text-center mb-6 text-gray-200">AI Pose Generator</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+                    <!-- Kolom Kontrol Kiri -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-300 mb-3">1. Unggah Foto Wajah</h3>
+                            <div id="image-preview-container" class="w-full h-64 bg-gray-900/50 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-600 transition-all overflow-hidden">
+                                <img id="image-preview" src="" alt="Pratinjau Gambar" class="hidden max-h-full max-w-full object-contain rounded-lg">
+                                <span id="preview-placeholder" class="text-gray-500 text-center p-4">Unggah foto close-up untuk hasil terbaik.</span>
+                            </div>
+                            <input type="file" id="image-upload" class="hidden" accept="image/*">
+                            <label for="image-upload" class="w-full mt-3 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                Pilih Gambar
+                            </label>
+                        </div>
+                        <div>
+                             <h3 class="text-xl font-semibold text-gray-300">3. Generate Pose</h3>
+                             <button id="generate-btn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed text-lg">
+                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                                Generate 3 Pose Baru
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Kolom Kontrol Kanan -->
+                    <div class="lg:col-span-3 space-y-4">
+                        <h3 class="text-xl font-semibold text-gray-300">2. Kustomisasi Prompt</h3>
+                        <div class="space-y-4 p-4 bg-gray-900/50 rounded-lg">
+                            <div>
+                                <label for="category-select" class="font-semibold text-gray-400 block mb-2">Pilih Kategori Gaya:</label>
+                                <select id="category-select" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3"></select>
+                            </div>
+                            <div id="pose-select-container">
+                                <label for="pose-select" class="font-semibold text-gray-400 block mb-2">Pilih Pose Spesifik:</label>
+                                <select id="pose-select" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3"></select>
+                            </div>
+                            <div>
+                                <label for="model-select" class="font-semibold text-gray-400 block mb-2">Pilih Model Prompt AI:</label>
+                                <select id="model-select" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3">
+                                    <option value="gemini">Gemini / Nano Banana (Detail Realistis)</option>
+                                    <option value="chatgpt">ChatGPT / DALL-E Style (Deskriptif)</option>
+                                    <option value="meta">Meta AI Style (Instruksi Langsung)</option>
+                                    <option value="simple">Prompt Sederhana (Dasar)</option>
+                                </select>
+                            </div>
+                             <div id="prompt-preview-container" class="space-y-2">
+                                 <label for="prompt-preview-input" class="font-semibold text-gray-400 block">Pratinjau & Edit Prompt:</label>
+                                 <textarea id="prompt-preview-input" rows="5" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3"></textarea>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="results-area" class="pt-8 mt-8">
+                    <div id="results-placeholder" class="flex flex-col items-center justify-center text-center h-48 text-gray-500 p-4 border-2 border-dashed border-gray-700 rounded-lg">
+                        <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M4 12l4 4m6-6l4-4"></path></svg>
+                        <h3 class="text-lg font-semibold">Hasil Pose Akan Muncul Di Sini</h3>
+                    </div>
+                    <div id="loading-indicator" class="hidden flex-col items-center justify-center text-center py-10">
+                        <div class="custom-loader mb-4"></div><p class="text-lg text-gray-300">AI sedang berkreasi... Mohon tunggu.</p>
+                    </div>
+                    <div id="results-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                    <div id="error-message" class="hidden text-center bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg mt-6"></div>
+                </div>
+            </section>
+
+            <hr class="border-gray-700">
+
+            <!-- SECTION: LOGO GENERATOR -->
+            <section id="logo-generator-section">
+                 <h2 class="text-3xl font-bold text-center mb-6 text-gray-200">Text to Logo Generator</h2>
+                 <div class="max-w-2xl mx-auto p-6 bg-gray-900/50 rounded-lg">
+                     <div class="space-y-4">
+                         <div>
+                             <label for="logo-prompt-input" class="text-xl font-semibold text-gray-300 block mb-3">Jelaskan Logo yang Anda Inginkan</label>
+                             <input type="text" id="logo-prompt-input" class="w-full bg-gray-700 border border-gray-600 text-white text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-4" placeholder="Contoh: seekor elang api, logo untuk tim esport">
+                         </div>
+                         <button id="generate-logo-btn" class="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed text-lg">
+                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 16v-2m-7.071-7.071l1.414-1.414M18.364 5.636l1.414-1.414M4.929 19.071l1.414-1.414M19.778 18.364l-1.414-1.414M2 12h2m16 0h2M12 2a2 2 0 00-2 2v1a2 2 0 004 0V4a2 2 0 00-2-2z"></path></svg>
+                             Buat Logo
+                         </button>
+                     </div>
+                 </div>
+                 <div id="logo-result-area" class="pt-8 mt-8">
+                     <div id="logo-result-placeholder" class="flex flex-col items-center justify-center text-center h-48 text-gray-500 p-4 border-2 border-dashed border-gray-700 rounded-lg max-w-sm mx-auto">
+                        <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
+                         <h3 class="text-lg font-semibold">Logo Anda Akan Muncul Di Sini</h3>
+                     </div>
+                     <div id="logo-loading-indicator" class="hidden flex-col items-center justify-center text-center py-10">
+                         <div class="custom-loader mb-4"></div><p class="text-lg text-gray-300">AI sedang mendesain logo... Mohon tunggu.</p>
+                     </div>
+                      <div id="logo-result-display" class="hidden flex-col items-center gap-4"></div>
+                      <div id="logo-error-message" class="hidden text-center bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg mt-6 max-w-md mx-auto"></div>
+                 </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-8 pt-6 border-t border-gray-700">
+            <div class="flex justify-center items-center gap-2 mb-4">
+                 <p class="text-gray-400 text-lg font-semibold">Muhamad Badru Wasih</p>
+                 <svg class="w-6 h-6 text-blue-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm-1.45,15.2-3.3-3.3a1,1,0,0,1,1.4-1.4l2.6,2.6,5.3-5.3a1,1,0,0,1,1.4,1.4Z"></path></svg>
+            </div>
+            <div id="social-links" class="flex justify-center items-center space-x-4">
+                <a class="text-gray-400 hover:text-white transition-colors cursor-pointer" data-link="aHR0cHM6Ly93YS5tZS81NzM1MDY1MzY1NDE=">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1022px-WhatsApp.svg.png" alt="WhatsApp" class="w-8 h-8">
+                </a>
+                <a class="text-gray-400 hover:text-white transition-colors cursor-pointer" data-link="aHR0cHM6Ly90Lm1lL01obWRiYWRydTIz">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/512px-Telegram_logo.svg.png" alt="Telegram" class="w-8 h-8">
+                </a>
+                <a class="text-gray-400 hover:text-white transition-colors cursor-pointer" data-link="aHR0cHM6Ly93d3cuaW5zdGFncmFtLmNvbS9NaG1kYmFkcnUyMy8=">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z" /></svg>
+                </a>
+                <a class="text-gray-400 hover:text-white transition-colors cursor-pointer" data-link="aHR0cHM6Ly93d3cuZmFjZWJvb2suY29tL21obWRiYWRydTIz">
+                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook" class="w-8 h-8">
+                </a>
+                <a class="text-gray-400 hover:text-white transition-colors cursor-pointer" data-link="bWFpbHRvOm11aGFtYWRiYWRydXdhc2loOEBnbWFpbC5jb20=">
+                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjXy6RJImES-Qi8SnGfU853QlXFBhQtu5wN0jRPUF-Tuy8DryaeeUllxU&s=10" alt="Email" class="w-8 h-8">
+                </a>
+            </div>
+        </footer>
+    </div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
